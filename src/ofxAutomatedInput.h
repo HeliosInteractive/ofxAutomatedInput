@@ -35,14 +35,18 @@ class ofxAutomatedInput
         bool getIsRecording() ;
         bool getIsPlaying() ;
 
-        vector<AutomatedInputData> inputData ;
+        string getDebugString( ) ;
+        ofEvent<AutomatedInputData> AUTOMATED_INPUT ;
+
     protected:
     private:
 
+        vector<AutomatedInputData> inputData ;
 
         int playbackIndex ;
         float maxLoopTime ;
         float loopOffsetTime ;
+        float startPlaybackTime ;
         float startRecordingTime ;
         ofxXmlSettings xml ;
 };

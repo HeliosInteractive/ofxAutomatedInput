@@ -29,4 +29,6 @@ class testApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		ofxAutomatedInput autoInput ;
+
+		void automatedInputHandler( AutomatedInputData &args ) ;
 };

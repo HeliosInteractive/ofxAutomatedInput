@@ -18,6 +18,7 @@ ofxAutomatedInput::ofxAutomatedInput()
     playbackIndex = -3 ;
     maxLoopTime = 0.0f ;
     loopOffsetTime = 0.0f ;
+    startPlaybackTime = 0.0f ;
 }
 
 ofxAutomatedInput::~ofxAutomatedInput()
@@ -30,11 +31,11 @@ ofxAutomatedInput::~ofxAutomatedInput()
 
     if ( getIsPlaying() == true )
     {
-        float adjustedTime = ofGetElapsedTimef() + loopOffsetTime ;
+        float adjustedTime = (ofGetElapsedTimef()-startPlaybackTime) + loopOffsetTime ;
         if ( adjustedTime > maxLoopTime )
             loopOffsetTime += -maxLoopTime ;
 
-        //compareTime
+        int prevIndex = playbackIndex ;
         for ( int i = 0 ; i < inputData.size() ; i++ )
         {
             if ( adjustedTime > inputData[ i ].timeOffset )
@@ -42,8 +43,20 @@ ofxAutomatedInput::~ofxAutomatedInput()
                 playbackIndex = i ;
             }
         }
+        if ( prevIndex != playbackIndex )
+        {
+                cout << "EVENT @ " << ofGetElapsedTimef() << " [" << playbackIndex << "] " << endl ;
+                ofNotifyEvent( AUTOMATED_INPUT , inputData[ playbackIndex ] ) ;
+        }
     }
  }
+
+string ofxAutomatedInput::getDebugString( )
+{
+    stringstream ss ;
+    ss << " @ input : " << playbackIndex << " / " << (inputData.size()-1) << " | # loops: " << floor( abs( loopOffsetTime / maxLoopTime )) ;
+    return ss.str() ;
+}
 
 void ofxAutomatedInput::draw ( )
 {
@@ -68,27 +81,14 @@ void ofxAutomatedInput::draw ( )
                 ofSetColor( 15 , 255 , 15 , 255 ) ;
                 ofCircle( inputData[ playbackIndex ].x , inputData[ playbackIndex ].y , 14 ) ;
             }
-
-
-/*
-    Created by Ben McChesney
-    @ Helios Interactive
-
-    301 8th Street, STE 250
-    San Francisco , CA
-
-    5/3/2013
-*/        else
+            else
             {
                 ofSetColor( 15 , 255 , 15 , 90 ) ;
                 ofCircle( inputData[ playbackIndex ].x , inputData[ playbackIndex ].y , 10 ) ;
             }
-
-
         }
     }
 }
-ofCircle( inputData[ playbackIndex ].x , inputData[ playbackIndex ].y , 14 ) ;
 
 void ofxAutomatedInput::reset( )
 {
@@ -100,23 +100,20 @@ void ofxAutomatedInput::reset( )
 void ofxAutomatedInput::togglePlayback( )
 {
     if ( getIsPlaying() == false )
-
-/*
-    Created by Ben McChesney
-    @ Helios Interactive
-
-    301 8th Street, STE 250
-    San Francisco , CA
-
-    5/3/2013
-*/ {
+    {
         if ( inputData.size() > 0 )
         {
+            startPlaybackTime = ofGetElapsedTimef() ;
             playbackIndex = 0 ;
+            ofNotifyEvent( AUTOMATED_INPUT , inputData[ playbackIndex ] ) ;
         }
     }
     else
+    {
         playbackIndex = -2 ;
+        startPlaybackTime = 0.0f ;
+    }
+
 }
 
 void ofxAutomatedInput::toggleRecording( )

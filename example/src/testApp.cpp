@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-
+    ofAddListener( autoInput.AUTOMATED_INPUT , this , &testApp::automatedInputHandler ) ;
 }
 
 //--------------------------------------------------------------
@@ -32,11 +32,19 @@ void testApp::draw(){
     ss << " (R) - reset data" << endl ;
     ss << " (S) - save data to XML" << endl ;
     ss << " (L) - load data from XML" << endl ;
-    ss << " # inputs : " << autoInput.inputData.size() << endl ;
+    ss << autoInput.getDebugString() << endl ;
 
     ofDrawBitmapStringHighlight( ss.str() , 15 , 25 ) ;
 }
 
+void testApp::automatedInputHandler( AutomatedInputData &args )
+{
+    cout << " EVENT IS INPUTING ! " << endl ;
+    float hue = ( args.x / ofGetWidth() ) * 255.0f ;
+    float saturation = ( args.y / ofGetHeight() ) * 255.0f ;
+    ofColor bg_color = ofColor::fromHsb( hue , saturation , 185.0f ) ;
+    ofBackground( bg_color ) ;
+}
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
 
